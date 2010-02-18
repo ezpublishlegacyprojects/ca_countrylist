@@ -1,17 +1,17 @@
 <?php
 
 /**
- * ezcountryinfo persistent object class definition
+ * ezcountrytranslation persistent object class definition
  * 
  */
 
 include_once "extension/ca_countrylist/classes/wscountryinfo.php";
-include_once "extension/ca_countrylist/classes/ezcountrytranslation.php";
+include_once "extension/ca_countrylist/classes/ezcountryinfo.php";
 
-class eZCountryInfo extends eZPersistentObject
+class eZCountryTranslation extends eZPersistentObject
 {
     /**
-     * Construct, use {@link eZCountryInfo::create()} to create new objects.
+     * Construct, use {@link eZCountryTranslation::create()} to create new objects.
      * 
      * @param array $row
      */
@@ -36,11 +36,11 @@ class eZCountryInfo extends eZPersistentObject
                                                                  'datatype' => 'string',
                                                                  'default' => '',
                                                                  'required' => true ),
-                                                'languages' => array( 'name' => 'languages',
+                                                'language_code' => array( 'name' => 'languageCode',
                                                                  'datatype' => 'string',
                                                                  'default' => '',
                                                                  'required' => true ),
-                                                'continent' => array( 'name' => 'continent',
+                                                'translation' => array( 'name' => 'translation',
                                                                  'datatype' => 'string',
                                                                  'default' => '',
                                                                  'required' => true )
@@ -48,17 +48,17 @@ class eZCountryInfo extends eZPersistentObject
                              'keys' => array( 'id' ),
                              'function_attributes' => array(),
                              'increment_key' => 'id',
-                             'class_name' => 'eZCountryInfo',
-                             'name' => 'ezcountryinfo' );
+                             'class_name' => 'eZCountryTranslation',
+                             'name' => 'ezcountrytranslation' );
         return $def;
     }
     
     /**
-     * Creates new eZCountryInfo object
+     * Creates new eZCountryTranslation object
      * 
      * @static
      * @param array $row
-     * @return eZCountryInfo
+     * @return eZCountryTranslation
      */
     public static function create( $row = array() )
     {
@@ -67,10 +67,10 @@ class eZCountryInfo extends eZPersistentObject
     }
 
     /**
-     * Fetch countryInfo by given id.
+     * Fetch eZCountryTranslation by given id.
      * 
      * @param int $id
-     * @return null|ezcomComment
+     * @return null|eZCountryTranslation
      */
     static function fetch( $id )
     {
@@ -94,45 +94,42 @@ class eZCountryInfo extends eZPersistentObject
         parent::remove( $conditions, $extraConditions );
     }
     
-    static function updateCountryList ()
+    static function addTranslation( $languageCode )
     {
-      $countryList = wsCountryInfo::getCountryList();
-      
-      foreach( $countryList as $country )
-      {
-        // check if the country is already in DB
-        $def = eZCountryInfo::definition();
-        $conds = array( 'country_code' => $country->countryCode );
-        $existingCountry = eZPersistentObject::fetchObjectList($def, null, $conds);
-
-        if ( count($existingCountry) == 0 )
+        $countryList = wsCountryInfo::getCountryList( $languageCode );
+       
+        foreach( $countryList as $country )
         {
-          // add a record
-          $countryObject = eZCountryInfo::create();
-          $countryObject->setAttribute('country_code',$country->countryCode);
-          $countryObject->setAttribute('languages',$country->languages);
-          $countryObject->setAttribute('continent',$country->continent);
-          $countryObject->store();
-          
-          //add english translation
           $countryTranslationObject = eZCountryTranslation::create();
           $countryTranslationObject->setAttribute('country_code',$country->countryCode);
-          $countryTranslationObject->setAttribute('language_code','en');
+          $countryTranslationObject->setAttribute('language_code',$languageCode);
           $countryTranslationObject->setAttribute('translation',$country->countryName);
           $countryTranslationObject->store();
         }
-        else
-        {
-          // update record
-          $countryObject = $existingCountry[0];
-          $countryObject->setAttribute('country_code',$country->countryCode);
-          $countryObject->setAttribute('languages',$country->languages);
-          $countryObject->setAttribute('continent',$country->continent);
-          $countryObject->store();
-        }
-      }
+    }
+
+    static function compare( $a, $b )
+    {
+      $al = self::normalize(strtolower($a->attribute('translation')));
+      $bl = self::normalize(strtolower($b->attribute('translation')));
+
+      return strcasecmp($al,$bl);
     }
     
+    static function normalize ($string) {
+        $table = array(
+            'Š'=>'S', 'š'=>'s', 'Đ'=>'Dj', 'đ'=>'dj', 'Ž'=>'Z', 'ž'=>'z', 'Č'=>'C', 'č'=>'c', 'Ć'=>'C', 'ć'=>'c',
+            'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 'È'=>'E', 'É'=>'E',
+            'Ê'=>'E', 'Ë'=>'E', 'Ì'=>'I', 'Í'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ñ'=>'N', 'Ò'=>'O', 'Ó'=>'O', 'Ô'=>'O',
+            'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O', 'Ù'=>'U', 'Ú'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Þ'=>'B', 'ß'=>'Ss',
+            'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a', 'æ'=>'a', 'ç'=>'c', 'è'=>'e', 'é'=>'e',
+            'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o',
+            'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b',
+            'ÿ'=>'y', 'Ŕ'=>'R', 'ŕ'=>'r',
+        );
+        
+        return strtr($string, $table);
+    }
 }
 
 ?>

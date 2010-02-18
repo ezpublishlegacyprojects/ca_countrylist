@@ -7,10 +7,10 @@ class wsCountryInfo {
     
   }
   
-  static function getCountryList()
+  static function getCountryList( $languageCode = "en")
   {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "http://ws.geonames.org/countryInfoJSON?style=full");
+    curl_setopt($ch, CURLOPT_URL, "http://ws.geonames.org/countryInfoJSON?lang=".$languageCode."&style=full");
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     $result = curl_exec($ch);
