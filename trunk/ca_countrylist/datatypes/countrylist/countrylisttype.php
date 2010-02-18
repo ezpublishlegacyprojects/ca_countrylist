@@ -7,6 +7,7 @@
  * Display list in current language
  */
 
+include_once "extension/ca_countrylist/classes/ezcountryinfo.php";
 
 class countryList extends eZDataType
 {

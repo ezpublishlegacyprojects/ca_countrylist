@@ -4,6 +4,9 @@
  * ezcountryinfo persistent object class definition
  * 
  */
+
+include_once "extension/ca_countrylist/classes/wscountryinfo.php";
+
 class eZCountryInfo extends eZPersistentObject
 {
     /**
@@ -28,15 +31,15 @@ class eZCountryInfo extends eZPersistentObject
                                                                'datatype' => 'integer',
                                                                'default' => 0,
                                                                'required' => true ),
-                                                'country_code' => array( 'name' => 'CountryCode',
+                                                'country_code' => array( 'name' => 'countryCode',
                                                                  'datatype' => 'string',
                                                                  'default' => '',
                                                                  'required' => true ),
-                                                'languages' => array( 'name' => 'Languages',
+                                                'languages' => array( 'name' => 'languages',
                                                                  'datatype' => 'string',
                                                                  'default' => '',
                                                                  'required' => true ),
-                                                'continent' => array( 'name' => 'Continent',
+                                                'continent' => array( 'name' => 'continent',
                                                                  'datatype' => 'string',
                                                                  'default' => '',
                                                                  'required' => true )
@@ -92,7 +95,34 @@ class eZCountryInfo extends eZPersistentObject
     
     static function updateCountryList ()
     {
+      $countryList = wsCountryInfo::getCountryList();
       
+      foreach( $countryList as $country )
+      {
+        // check if the country is already in DB
+        $def = eZCountryInfo::definition();
+        $conds = array( 'country_code' => $country->countryCode );
+        $existingCountry = eZPersistentObject::fetchObjectList($def, null, $conds);
+
+        if ( count($existingCountry) == 0 )
+        {
+          // add a record
+          $countryObject = eZCountryInfo::create();
+          $countryObject->setAttribute('country_code',$country->countryCode);
+          $countryObject->setAttribute('languages',$country->languages);
+          $countryObject->setAttribute('continent',$country->continent);
+          $countryObject->store();
+        }
+        else
+        {
+          // update record
+          $countryObject = $existingCountry[0];
+          $countryObject->setAttribute('country_code',$country->countryCode);
+          $countryObject->setAttribute('languages',$country->languages);
+          $countryObject->setAttribute('continent',$country->continent);
+          $countryObject->store();
+        }
+      }
     }
     
 }
