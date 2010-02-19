@@ -40,6 +40,14 @@ class countryList extends eZDataType
   */
   function onPublish( $contentObjectAttribute, $contentObject, $publishedNodes )
   {
+  }
+  
+  /*!
+   Initializes the class attribute with some data.
+   \note Default implementation does nothing.
+  */
+  function initializeClassAttribute( $classAttribute )
+  {
     eZCountryInfo::updateCountryList();
   }
 
@@ -48,7 +56,25 @@ class countryList extends eZDataType
    */
   function objectAttributeContent( $objectAttribute )
   {
-
+    $country_code = $objectAttribute->attribute('data_text');
+    
+    $result = '';
+    if ( $country_code != '' )
+    {
+      // Fetch country info
+      $def = eZCountryInfo::definition();
+      $conds = array( 'country_code' => $country_code );
+      $currentCountry = eZPersistentObject::fetchObject($def, null, $conds);
+      
+      // Fetch country translation
+      $def = eZCountryTranslation::definition();
+      $conds = array( 'country_code' => $currentCountry->attribute('country_code'),
+                      'language_code' => 'en' );
+      $translationObject = eZPersistentObject::fetchObject($def, null, $conds); 
+      $result = $translationObject->attribute('translation');
+    }    
+    
+    return $result;
   }
 
   /*
@@ -56,12 +82,33 @@ class countryList extends eZDataType
    */
   function title( $objectAttribute, $name = null )
   {
-
+    $country_code = $objectAttribute->attribute('data_text');
+    
+    $result = '';
+    if ( $country_code != '' )
+    {
+      // Fetch country info
+      $def = eZCountryInfo::definition();
+      $conds = array( 'country_code' => $country_code );
+      $currentCountry = eZPersistentObject::fetchObject($def, null, $conds);
+      
+      // Fetch country translation
+      $def = eZCountryTranslation::definition();
+      $conds = array( 'country_code' => $currentCountry->attribute('country_code'),
+                      'language_code' => 'en' );
+      $translationObject = eZPersistentObject::fetchObject($def, null, $conds); 
+      $result = $translationObject->attribute('translation');
+    }
   }
 
   function fetchObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
   {
-
+    $selectedCountryHTTPName = $base . '_countrylist_' . $contentObjectAttribute->attribute( 'id' );
+    if( $http->hasPostVariable( $selectedCountryHTTPName ) )
+    {
+      $contentObjectAttribute->setAttribute( 'data_text', $http->postVariable( $selectedCountryHTTPName ) );
+      $contentObjectAttribute->store();
+    }
   }
 
   function isIndexable()
@@ -100,6 +147,23 @@ class countryList extends eZDataType
 
   function toString( $objectAttribute )
   {
+    $country_code = $objectAttribute->attribute('data_text');
+    
+    $result = '';
+    if ( $country_code != '' )
+    {
+      // Fetch country info
+      $def = eZCountryInfo::definition();
+      $conds = array( 'country_code' => $country_code );
+      $currentCountry = eZPersistentObject::fetchObject($def, null, $conds);
+      
+      // Fetch country translation
+      $def = eZCountryTranslation::definition();
+      $conds = array( 'country_code' => $currentCountry->attribute('country_code'),
+                      'language_code' => 'en' );
+      $translationObject = eZPersistentObject::fetchObject($def, null, $conds); 
+      $result = $translationObject->attribute('translation');
+    }
   }
 
 
