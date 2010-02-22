@@ -72,7 +72,7 @@ class countryList extends eZDataType
                       'language_code' => 'en' );
       $translationObject = eZPersistentObject::fetchObject($def, null, $conds); 
       $result = $translationObject->attribute('translation');
-    }    
+    }
     
     return $result;
   }
@@ -103,12 +103,29 @@ class countryList extends eZDataType
 
   function fetchObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
   {
-    $selectedCountryHTTPName = $base . '_countrylist_' . $contentObjectAttribute->attribute( 'id' );
+    $selectedCountryHTTPName = 'countrylist_' . $contentObjectAttribute->attribute( 'id' );
     if( $http->hasPostVariable( $selectedCountryHTTPName ) )
     {
       $contentObjectAttribute->setAttribute( 'data_text', $http->postVariable( $selectedCountryHTTPName ) );
       $contentObjectAttribute->store();
+      return true;
     }
+    return false;
+  }
+  
+   /*!
+   Fetches the http post variables for collected information
+  */
+  function fetchCollectionAttributeHTTPInput( $collection, $collectionAttribute, $http, $base, $contentObjectAttribute )
+  {
+    $selectedCountryHTTPName = 'countrylist_' . $contentObjectAttribute->attribute( 'id' );
+    if( $http->hasPostVariable( $selectedCountryHTTPName ) )
+    {
+      $collectionAttribute->setAttribute( 'data_text', $http->postVariable( $selectedCountryHTTPName ) );
+      $collectionAttribute->store();
+      return true;
+    }
+    return false;
   }
 
   function isIndexable()
@@ -164,6 +181,14 @@ class countryList extends eZDataType
       $translationObject = eZPersistentObject::fetchObject($def, null, $conds); 
       $result = $translationObject->attribute('translation');
     }
+  }
+  
+  /*!
+   \return true if the datatype can be used as an information collector
+  */
+  function isInformationCollector()
+  {
+      return true;
   }
 
 
