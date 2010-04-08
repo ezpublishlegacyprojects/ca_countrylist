@@ -133,6 +133,28 @@ class eZCountryInfo extends eZPersistentObject
       }
     }
     
+    public static function fetchFromCountryCode( $countryCode )
+    {
+        $def = eZCountryInfo::definition();
+        $conds = array( 'country_code' => $countryCode );
+        $currentCountry = eZPersistentObject::fetchObject($def, null, $conds);
+        
+        if ( !is_object($currentCountry) )
+        {
+          eZCountryInfo::updateCountryList();
+          $currentCountry = eZPersistentObject::fetchObject($def, null, $conds);
+        }
+        
+        if ( is_object($currentCountry) )
+        {
+            return $currentCountry;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
 }
 
 ?>

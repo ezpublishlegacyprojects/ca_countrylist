@@ -62,16 +62,10 @@ class countryList extends eZDataType
     if ( $country_code != '' )
     {
       // Fetch country info
-      $def = eZCountryInfo::definition();
-      $conds = array( 'country_code' => $country_code );
-      $currentCountry = eZPersistentObject::fetchObject($def, null, $conds);
+      $currentCountry = eZCountryInfo::fetchFromCountryCode( $country_code );
       
       // Fetch country translation
-      $def = eZCountryTranslation::definition();
-      $conds = array( 'country_code' => $currentCountry->attribute('country_code'),
-                      'language_code' => 'en' );
-      $translationObject = eZPersistentObject::fetchObject($def, null, $conds); 
-      $result = $translationObject->attribute('translation');
+      $result = eZCountryTranslation::fetchFromLanguageCode( $currentCountry->attribute('country_code') );
     }
     
     return $result;
@@ -88,16 +82,10 @@ class countryList extends eZDataType
     if ( $country_code != '' )
     {
       // Fetch country info
-      $def = eZCountryInfo::definition();
-      $conds = array( 'country_code' => $country_code );
-      $currentCountry = eZPersistentObject::fetchObject($def, null, $conds);
+      $currentCountry = eZCountryInfo::fetchFromCountryCode( $country_code );
       
       // Fetch country translation
-      $def = eZCountryTranslation::definition();
-      $conds = array( 'country_code' => $currentCountry->attribute('country_code'),
-                      'language_code' => 'en' );
-      $translationObject = eZPersistentObject::fetchObject($def, null, $conds); 
-      $result = $translationObject->attribute('translation');
+      $result = eZCountryTranslation::fetchFromLanguageCode( $currentCountry->attribute('country_code') );
     }
   }
 
@@ -170,16 +158,10 @@ class countryList extends eZDataType
     if ( $country_code != '' )
     {
       // Fetch country info
-      $def = eZCountryInfo::definition();
-      $conds = array( 'country_code' => $country_code );
-      $currentCountry = eZPersistentObject::fetchObject($def, null, $conds);
+      $currentCountry = eZCountryInfo::fetchFromCountryCode( $country_code );
       
       // Fetch country translation
-      $def = eZCountryTranslation::definition();
-      $conds = array( 'country_code' => $currentCountry->attribute('country_code'),
-                      'language_code' => 'en' );
-      $translationObject = eZPersistentObject::fetchObject($def, null, $conds); 
-      $result = $translationObject->attribute('translation');
+      $result = eZCountryTranslation::fetchFromLanguageCode( $currentCountry->attribute('country_code') );
     }
   }
   

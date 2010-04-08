@@ -130,6 +130,37 @@ class eZCountryTranslation extends eZPersistentObject
         
         return strtr($string, $table);
     }
+    
+    static function fetchListFromLanguageCode( $languageCode )
+    {
+      $def = eZCountryTranslation::definition();
+      $conds = array( 'language_code' => $languageCode );
+      $translatedList = eZPersistentObject::fetchObjectList($def, null, $conds);
+      
+      if ( !$translatedList )
+      {
+        eZCountryTranslation::addTranslation( $languageCode );
+        
+        $def = eZCountryTranslation::definition();
+        $conds = array( 'language_code' => $languageCode );
+        $translatedList = eZPersistentObject::fetchObjectList($def, null, $conds);
+      }
+      
+      usort($translatedList, array("eZCountryTranslation", "compare"));
+      
+      return $translatedList;
+    }
+    
+    static function fetchFromLanguageCode( $languageCode )
+    {
+        $def = eZCountryTranslation::definition();
+        $conds = array( 'country_code' => $languageCode,
+                        'language_code' => 'en' );
+        $translationObject = eZPersistentObject::fetchObject($def, null, $conds); 
+        $result = $translationObject->attribute('translation');
+        
+        return $result;
+    }
 }
 
 ?>

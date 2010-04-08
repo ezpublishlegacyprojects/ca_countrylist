@@ -67,26 +67,12 @@ class CountryInfoOperator
     function fetchCountryList( $params )
     {
       // Fetch country of current locale
-      $def = eZCountryInfo::definition();
-      $conds = array( 'country_code' => $params['countryCode'] );
-      $currentCountry = eZPersistentObject::fetchObject($def, null, $conds);
+      $currentCountry = eZCountryInfo::fetchFromCountryCode( $params['countryCode'] );
       
       // Fetch translation of country list in current locale (if there is one)
       $currentLanguages = $currentCountry->attribute('languages');
-      $def = eZCountryTranslation::definition();
-      $conds = array( 'language_code' => substr($currentLanguages, 0, 2) );
-      $translatedList = eZPersistentObject::fetchObjectList($def, null, $conds);
       
-      if ( !$translatedList )
-      {
-        eZCountryTranslation::addTranslation( substr($currentLanguages, 0, 2) );
-        
-        $def = eZCountryTranslation::definition();
-        $conds = array( 'language_code' => substr($currentLanguages, 0, 2) );
-        $translatedList = eZPersistentObject::fetchObjectList($def, null, $conds);
-      }
-      
-      usort($translatedList, array("eZCountryTranslation", "compare"));
+      $translatedList = eZCountryTranslation::fetchListFromLanguageCode( substr($currentLanguages, 0, 2) );
       
       return $translatedList;
     }
