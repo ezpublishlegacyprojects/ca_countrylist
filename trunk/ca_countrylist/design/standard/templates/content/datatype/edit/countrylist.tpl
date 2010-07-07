@@ -1,10 +1,10 @@
 {def $locale = ezini('RegionalSettings','Locale','site.ini')}
 {def $localeArray = $locale|explode('-')}
 {def $countryList = fetch_country_list( hash('countryCode',$localeArray[1]|upcase) )}
-{if $attribute.data_text|eq('')}
-    {def $matchItem = $localeArray[1]|upcase}
-{else}
+{if $attribute.has_content}
     {def $matchItem = $attribute.data_text}
+{else}
+    {def $matchItem = $localeArray[1]|upcase}
 {/if}
 
 <select name="countrylist_{$attribute.id}" id="countrylist_{$attribute.id}">
