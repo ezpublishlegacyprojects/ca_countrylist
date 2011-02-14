@@ -8,6 +8,7 @@
 {/if}
 
 <select name="countrylist_{$attribute.id}" id="countrylist_{$attribute.id}">
+    <option value=""></option>
 {foreach $countryList as $country}
     <option value="{$country.country_code}" {if $matchItem|eq($country.country_code)}selected="selected"{/if}>{$country.translation}</option>
 {/foreach}

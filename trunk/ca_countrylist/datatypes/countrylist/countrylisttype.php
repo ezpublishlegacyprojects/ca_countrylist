@@ -186,6 +186,37 @@ class countryList extends eZDataType
         return true;
     }
 
+    function validateObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
+    {
+        $classAttribute = $contentObjectAttribute->contentClassAttribute();
+
+        if ( $http->hasPostVariable( 'countrylist_' . $contentObjectAttribute->attribute( 'id' ) ) )
+        {
+            $data = $http->postVariable( 'countrylist_' . $contentObjectAttribute->attribute( 'id' ) );
+
+            if ( $data == "" )
+            {
+                if ( !$classAttribute->attribute( 'is_information_collector' ) and
+                     $contentObjectAttribute->validateIsRequired() )
+                {
+                    $contentObjectAttribute->setValidationError( ezpI18n::tr( 'kernel/classes/datatypes',
+                                                                         'Input required.' ) );
+                    return eZInputValidator::STATE_INVALID;
+                }
+            }
+            else
+            {
+                return eZInputValidator::STATE_ACCEPTED;
+            }
+        }
+        else if ( !$classAttribute->attribute( 'is_information_collector' ) and $contentObjectAttribute->validateIsRequired() )
+        {
+            $contentObjectAttribute->setValidationError( ezpI18n::tr( 'kernel/classes/datatypes', 'Input required.' ) );
+            return eZInputValidator::STATE_INVALID;
+        }
+        return eZInputValidator::STATE_ACCEPTED;
+    }
+
 }
 eZDataType::register( countryList::DATA_TYPE_STRING, 'countryList' );
 
