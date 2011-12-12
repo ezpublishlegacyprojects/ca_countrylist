@@ -6,7 +6,7 @@
 {/if}
 {def $countryList = fetch_country_list( hash( 'countryCode', $localeArray[1]|upcase,
                                               'languageCode', $language ) )}
-{if $attribute.has_content}
+{if $attribute.data_text}
     {def $matchItem = $attribute.data_text}
 {else}
     {def $matchItem = $localeArray[1]|upcase}
