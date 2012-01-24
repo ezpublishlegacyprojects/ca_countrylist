@@ -188,15 +188,23 @@ class countryList extends eZDataType
     
     function validateCollectionAttributeHTTPInput( $http, $base, $contentObjectAttribute )
     {
-        if( $contentObjectAttribute->DataText == '' )
+        $selectedCountryHTTPName = 'countrylist_' . $contentObjectAttribute->attribute( 'id' );
+
+        if ( $http->hasPostVariable( $selectedCountryHTTPName ) )
         {
-            $contentObjectAttribute->setValidationError( ezi18n( 'kernel/classes/datatypes',
+        		if ( $http->postVariable( $selectedCountryHTTPName ) == '' ) {
+        				$contentObjectAttribute->setValidationError( ezi18n( 'kernel/classes/datatypes',
                                                                          'Input required.' ) );
-            return eZInputValidator::STATE_INVALID;
+            		return eZInputValidator::STATE_INVALID;
+            } else  {
+            		return eZInputValidator::STATE_ACCEPTED;
+            }
         }
         else
         {
-            return eZInputValidator::STATE_ACCEPTED;
+        		$contentObjectAttribute->setValidationError( ezi18n( 'kernel/classes/datatypes',
+                                                                         'Input required.' ) );
+            return eZInputValidator::STATE_INVALID;
         }
         return eZInputValidator::STATE_ACCEPTED;
     }
